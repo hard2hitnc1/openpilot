@@ -174,7 +174,6 @@ def main():
             set_status_params(UpdaterState.FAILED, False, False)
             cloudlog.exception("exception while downloading ...")
 
-      set_status_params(UpdaterState.IDLE, update_available, update_ready)
     else:
       set_status_params(UpdaterState.FAILED, False, False)
 
