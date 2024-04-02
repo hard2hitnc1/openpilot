@@ -6,7 +6,7 @@ import os
 import pathlib
 
 from openpilot.selfdrive.test.helpers import DirectoryHttpServer, http_server_context, processes_context
-from openpilot.system.updated.casync.common import create_build_metadata_file, create_caexclude_file, create_casync_release
+from openpilot.system.updated.casync.common import create_build_metadata_file, create_casync_release
 from openpilot.system.version import BuildMetadata, OpenpilotMetadata
 from openpilot.selfdrive.updated.tests.test_base import BaseUpdateTest, run, update_release
 
@@ -33,7 +33,6 @@ def create_mock_build_metadata(channel, version, agnos_version, release_notes):
 
 
 def create_casync_files(dirname, channel, version, agnos_version, release_notes):
-  create_caexclude_file(pathlib.Path(dirname))
   create_build_metadata_file(pathlib.Path(dirname), create_mock_build_metadata(channel, version, agnos_version, release_notes), channel)
 
 
