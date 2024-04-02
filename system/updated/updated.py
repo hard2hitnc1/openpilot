@@ -10,6 +10,7 @@ from openpilot.common.params import Params
 from openpilot.common.run import run_cmd
 from openpilot.common.swaglog import cloudlog
 from openpilot.system.updated.casync.common import CASYNC_ARGS
+from openpilot.system.updated.casync import casync
 from openpilot.selfdrive.updated.tests.test_base import get_consistent_flag
 from openpilot.selfdrive.updated.updated import UserRequest, WaitTimeHelper, handle_agnos_update
 from openpilot.system.hardware import AGNOS
@@ -96,7 +97,6 @@ def check_update_available(current_directory, other_metadata: BuildMetadata):
 
 
 def download_update(manifest):
-  cloudlog.info("")
   env = os.environ.copy()
   env["TMPDIR"] = str(CASYNC_TMPDIR)
   CASYNC_TMPDIR.mkdir(exist_ok=True)
@@ -104,7 +104,22 @@ def download_update(manifest):
 
   for entry in manifest:
     if "type" in entry and entry["type"] == "path" and entry["path"] == "/data/openpilot":
-      run_cmd(["casync", "extract", entry["casync"]["caidx"], str(CASYNC_PATH), f"--seed={BASEDIR}", *CASYNC_ARGS], env=env)
+      base_path = os.path.dirname(entry["casync"]["caibx"])
+      store_path = os.path.join(base_path, "default.castr")
+
+      target = casync.parse_caibx(entry["casync"]["caibx"])
+
+      cache_filename = os.path.join(CASYNC_TMPDIR, "cache.tar")
+      tmp_filename = os.path.join(CASYNC_TMPDIR, "tmp.tar")
+
+      sources = [('cache', casync.DirectoryTarChunkReader(BASEDIR, cache_filename), casync.build_chunk_dict(target))]
+      sources += [('remote', casync.RemoteChunkReader(store_path), casync.build_chunk_dict(target))]
+
+      cloudlog.info(f"extracting {entry['casync']['caibx']} to {CASYNC_PATH}")
+      stats = casync.extract_directory(target, sources, CASYNC_PATH, tmp_filename)
+      cloudlog.info("extraction complete")
+
+      return stats
 
 
 def finalize_update():

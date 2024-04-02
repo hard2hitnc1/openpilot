@@ -11,7 +11,7 @@ from openpilot.system.version import BuildMetadata, OpenpilotMetadata
 from openpilot.selfdrive.updated.tests.test_base import BaseUpdateTest, run, update_release
 
 
-def create_remote_response(channel, build_metadata, casync_caidx, casync_digest):
+def create_remote_response(channel, build_metadata, casync_caibx, casync_digest):
   return {
     "build_metadata": dataclasses.asdict(build_metadata),
     "manifest": [
@@ -19,7 +19,7 @@ def create_remote_response(channel, build_metadata, casync_caidx, casync_digest)
         "type": "path",
         "path": "/data/openpilot",
         "casync": {
-          "caidx": casync_caidx,
+          "caibx": casync_caibx,
           "digest": casync_digest
         }
       }
@@ -55,7 +55,7 @@ def OpenpilotChannelMockAPI(release_digests, mock_releases, casync_base):
       else:
         channel = self.path.split("/")[-1]
         build_metadata = create_mock_build_metadata(channel, *mock_releases[channel])
-        response = create_remote_response(channel, build_metadata, f"{casync_base}/{channel}.caidx", release_digests[channel])
+        response = create_remote_response(channel, build_metadata, f"{casync_base}/{channel}.caibx", release_digests[channel])
 
       response = json.dumps(response)
 
