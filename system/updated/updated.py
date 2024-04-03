@@ -103,7 +103,7 @@ def download_update(manifest):
   CASYNC_PATH.mkdir(exist_ok=True)
 
   for entry in manifest:
-    if "type" in entry and entry["type"] == "path" and entry["path"] == "/data/openpilot":
+    if "type" in entry and entry["type"] == "path_tarred" and entry["path"] == "/data/openpilot":
       base_path = os.path.dirname(entry["casync"]["caibx"])
       store_path = os.path.join(base_path, "default.castr")
 
